@@ -6,6 +6,8 @@ import middle.OrderProcessing;
 import middle.StockReadWriter;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
@@ -31,6 +33,10 @@ public class CashierView implements Observer
   private final JButton     theBtCheck = new JButton( CHECK );
   private final JButton     theBtBuy   = new JButton( BUY );
   private final JButton     theBtBought= new JButton( BOUGHT );
+
+  private final JSpinner spinner = new JSpinner();
+
+  private int spinnerValue = 0;
 
   private StockReadWriter theStock     = null;
   private OrderProcessing theOrder     = null;
@@ -64,8 +70,18 @@ public class CashierView implements Observer
 
     theBtCheck.setBounds( 16, 25+60*0, 80, 40 );    // Check Button
     theBtCheck.addActionListener(                   // Call back code
-      e -> cont.doCheck( theInput.getText() ) );
-    cp.add( theBtCheck );                           //  Add to canvas
+      e -> cont.doCheck( theInput.getText(), spinnerValue ) );
+    cp.add( theBtCheck );                         //  Add to canvas
+
+    spinner.setBounds(400-60, 5, 40, 40 );
+    spinner.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        // Cast value of spinner to int and save as spinnerValue variable
+        spinnerValue = (int) spinner.getValue();
+
+      }
+    });
+    cp.add(spinner);
 
     theBtBuy.setBounds( 16, 25+60*1, 80, 40 );      // Buy button 
     theBtBuy.addActionListener(                     // Call back code

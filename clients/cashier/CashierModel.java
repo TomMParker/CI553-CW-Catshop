@@ -5,7 +5,16 @@ import catalogue.Product;
 import debug.DEBUG;
 import middle.*;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Observable;
+import java.io.PrintWriter;
+
+import java.util.Date;
+import java.text.SimpleDateFormat;
+// Format date to append to new file name
+
+
 
 /**
  * Implements the Model of the cashier client
@@ -25,6 +34,9 @@ public class CashierModel extends Observable
   private StockReadWriter theStock     = null;
   private OrderProcessing theOrder     = null;
 
+  SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss EE MMM dd");
+  Date curDate = new Date();
+
   /**
    * Construct the model of the Cashier
    * @param mf The factory to create the connection objects
@@ -40,7 +52,9 @@ public class CashierModel extends Observable
     {
       DEBUG.error("CashierModel.constructor\n%s", e.getMessage() );
     }
-    theState   = State.process;                  // Current state
+    theState   = State.process;
+    // Current state
+    //theStock.addStock();
   }
   
   /**
@@ -56,7 +70,7 @@ public class CashierModel extends Observable
    * Check if the product is in Stock
    * @param productNum The product number
    */
-  public void doCheck(String productNum )
+  public void doCheck(String productNum, int userInput )
   {
     String theAction = "";
     theState  = State.process;                  // State process
@@ -67,15 +81,15 @@ public class CashierModel extends Observable
       if ( theStock.exists( pn ) )              // Stock Exists?
       {                                         // T
         Product pr = theStock.getDetails(pn);   //  Get details
-        if ( pr.getQuantity() >= amount )       //  In stock?
+        if ( pr.getQuantity() >= userInput )       //  In stock?
         {                                       //  T
           theAction =                           //   Display 
             String.format( "%s : %7.2f (%2d) ", //
               pr.getDescription(),              //    description
               pr.getPrice(),                    //    price
-              pr.getQuantity() );               //    quantity     
+              userInput);               //    quantity
           theProduct = pr;                      //   Remember prod.
-          theProduct.setQuantity( amount );     //    & quantity
+          theProduct.setQuantity( userInput );     //    & quantity
           theState = State.checked;             //   OK await BUY 
         } else {                                //  F
           theAction =                           //   Not in Stock
@@ -117,6 +131,7 @@ public class CashierModel extends Observable
           theBasket.add( theProduct );          //  Add to bought
           theAction = "Purchased " +            //    details
                   theProduct.getDescription();  //
+          System.out.println("testing");
         } else {                                // F
           theAction = "!!! Not in stock";       //  Now no stock
         }
@@ -144,6 +159,12 @@ public class CashierModel extends Observable
            theBasket.size() >= 1 )            // items > 1
       {                                       // T
         theOrder.newOrder( theBasket );       //  Process order
+        System.out.println("testing2");
+        PrintWriter out = new PrintWriter("receipt.txt");
+        out.println(sdf.format(curDate));
+        out.println(theBasket.getDetails());
+        out.close();
+
         theBasket = null;                     //  reset
       }                                       //
       theAction = "Next customer";            // New Customer
@@ -154,8 +175,10 @@ public class CashierModel extends Observable
       DEBUG.error( "%s\n%s", 
             "CashierModel.doCancel", e.getMessage() );
       theAction = e.getMessage();
+    } catch (FileNotFoundException e) {
+        throw new RuntimeException(e);
     }
-    theBasket = null;
+      theBasket = null;
     setChanged(); notifyObservers(theAction); // Notify
   }
 

@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Implements the Customer view.
@@ -34,6 +36,10 @@ public class CustomerView implements Observer
   private final JScrollPane theSP      = new JScrollPane();
   private final JButton     theBtCheck = new JButton( Name.CHECK );
   private final JButton     theBtClear = new JButton( Name.CLEAR );
+
+  private final JSpinner spinner = new JSpinner();
+
+  private int spinnerValue = 0;
 
   private Picture thePicture = new Picture(80,80);
   private StockReader theStock   = null;
@@ -66,8 +72,21 @@ public class CustomerView implements Observer
 
     theBtCheck.setBounds( 16, 25+60*0, 80, 40 );    // Check button
     theBtCheck.addActionListener(                   // Call back code
-      e -> cont.doCheck( theInput.getText() ) );
-    cp.add( theBtCheck );                           //  Add to canvas
+    e -> {
+        cont.doCheck(theInput.getText(), spinnerValue); // update to check JSpinner value
+    });
+    cp.add( theBtCheck );
+
+    //add JSpinner and collect value to be used in doCheck method
+    spinner.setBounds(400-60, 5, 40, 40 );
+    spinner.addChangeListener(new ChangeListener() {
+        public void stateChanged(ChangeEvent e) {
+        // Cast value of spinner to int and save as spinnerValue variable
+        spinnerValue = (int) spinner.getValue();
+
+      }
+    });
+    cp.add(spinner);
 
     theBtClear.setBounds( 16, 25+60*1, 80, 40 );    // Clear button
     theBtClear.addActionListener(                   // Call back code
