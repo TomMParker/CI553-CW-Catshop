@@ -19,7 +19,8 @@ import clients.warehousePick.PickModel;
 import clients.warehousePick.PickView;
 import middle.LocalMiddleFactory;
 import middle.MiddleFactory;
-
+import javax.swing.UIManager;
+import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
 import java.awt.*;
 
@@ -46,6 +47,11 @@ class Main
    */
   public void begin()
   {
+    try {
+      UIManager.setLookAndFeel( new FlatDarkLaf() );
+    } catch( Exception ex ) {
+      System.err.println( "Failed to initialize theme. Using fallback." );
+    }
     //DEBUG.set(true); /* Lots of debug info */
     MiddleFactory mlf = new LocalMiddleFactory();  // Direct access
  

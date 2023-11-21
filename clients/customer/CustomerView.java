@@ -78,7 +78,7 @@ public class CustomerView implements Observer
     cp.add( theBtCheck );
 
     //add JSpinner and collect value to be used in doCheck method
-    spinner.setBounds(400-60, 5, 40, 40 );
+    spinner.setBounds(400-60, 5, 50, 40 );
     spinner.addChangeListener(new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
         // Cast value of spinner to int and save as spinnerValue variable

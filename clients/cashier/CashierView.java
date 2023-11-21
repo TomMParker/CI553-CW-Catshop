@@ -73,7 +73,7 @@ public class CashierView implements Observer
       e -> cont.doCheck( theInput.getText(), spinnerValue ) );
     cp.add( theBtCheck );                         //  Add to canvas
 
-    spinner.setBounds(400-60, 5, 40, 40 );
+    spinner.setBounds(400-60, 5, 50, 40 );
     spinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         // Cast value of spinner to int and save as spinnerValue variable
