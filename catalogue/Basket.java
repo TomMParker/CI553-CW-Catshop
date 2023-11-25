@@ -1,10 +1,7 @@
 package catalogue;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Formatter;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * A collection of products from the CatShop.
@@ -18,7 +15,7 @@ public class Basket extends ArrayList<Product> implements Serializable
 {
   private static final long serialVersionUID = 1;
   private int    theOrderNum = 0;          // Order number
-  
+
   /**
    * Constructor for a basket which is
    *  used to represent a customer order/ wish list
@@ -55,17 +52,88 @@ public class Basket extends ArrayList<Product> implements Serializable
    * @return true if successfully adds the product
    */
   // Will be in the Java doc for Basket
-  @Override
-  public boolean add( Product pr )
-  {                              
-    return super.add( pr );     // Call add in ArrayList
+  //@Override (not required as method is overloaded)
+  public boolean add( Product pr, int userInput )
+  {
+    if (productInBasket(pr)){
+      editQuantity(pr, userInput);
+      return true;
   }
+    return super.add( pr );     // if product not already in basket add it
+  }
+
+  /**
+   * Checks if product in basket
+   * @param pr is the product to be checked
+   * @return true if product in basket
+   */
+
+  private boolean productInBasket(Product pr){
+    for(Product productInBasket: this){
+      if(productInBasket.getProductNum().equals(pr.getProductNum())){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param pr is the product to be searched
+   * @return quantity of selected product in basket
+   */
+  public int getQuantityInBasket(Product pr) {
+    for (Product productInBasket : this) { //loops through basket
+      if (productInBasket.getProductNum().equals(pr.getProductNum())) { //checks if product is in basket
+        return productInBasket.getQuantity(); // returns quantity in basket
+      }
+    }
+    return 0; // return 0 if product not found in basket
+  }
+
+  /**
+   * removes selected product
+   * @param pr is the product to be searched
+   */
+  public void removeProduct(Product pr){
+    this.removeIf(productInBasket -> productInBasket.getProductNum().equals(pr.getProductNum()));
+  }
+
+  /**
+   * adds quantity selected of product
+   * @param pr is the product to be added
+   * @param userInput is the new quantity
+   */
+
+  public void editQuantity(Product pr, int userInput){
+    if (userInput <= 0){ //if new inputted quantity is 0, remove product from basket
+      removeProduct(pr);
+    } else {
+      for(Product productInBasket : this){ //loop through basket
+        if(productInBasket.getProductNum().equals(pr.getProductNum())){ // if product is in basket
+          productInBasket.setQuantity(userInput);  //set quantity in basket to = userInput
+          return;
+        }
+      }
+      pr.setQuantity(userInput);
+      this.add(pr);
+    }
+  }
+
+ /* public void addQuantity(Product pr, int userInput) {
+    for (Product productInBasket : this) {
+      if (productInBasket.getProductNum().equals(pr.getProductNum())) {
+        productInBasket.setQuantity(userInput);
+        break;
+      }
+    }
+  }*/
+
+
 
   /**
    * Returns a description of the products in the basket suitable for printing.
    * @return a string description of the basket products
    */
-  //pushtestakwdgfaskdfhaisudfhaisudfhilsudalsudfhalisdu
   public String getDetails()
   {
     Locale uk = Locale.UK;

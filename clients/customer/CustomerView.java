@@ -18,7 +18,7 @@ import javax.swing.event.ChangeListener;
  * @author  Mike Smith University of Brighton
  * @version 1.0
  */
-
+//Test message number 2 sighdlfghsdlg
 public class CustomerView implements Observer
 {
   class Name                              // Names of buttons
@@ -37,7 +37,7 @@ public class CustomerView implements Observer
   private final JButton     theBtCheck = new JButton( Name.CHECK );
   private final JButton     theBtClear = new JButton( Name.CLEAR );
 
-  private final JSpinner spinner = new JSpinner();
+  private final JSpinner spinner = new JSpinner(new SpinnerNumberModel(1,1,100,1));
 
   private int spinnerValue = 0;
 
@@ -78,7 +78,7 @@ public class CustomerView implements Observer
     cp.add( theBtCheck );
 
     //add JSpinner and collect value to be used in doCheck method
-    spinner.setBounds(400-60, 5, 50, 40 );
+    spinner.setBounds(400-70, 5, 50, 40 );
     spinner.addChangeListener(new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
         // Cast value of spinner to int and save as spinnerValue variable

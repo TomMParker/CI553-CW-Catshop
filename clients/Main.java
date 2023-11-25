@@ -24,7 +24,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
 import java.awt.*;
 
-
+//test comme444444
 /**
  * Starts all the clients  as a single application.
  * Good for testing the system using a single application but no use of RMI.

@@ -1,6 +1,8 @@
 package clients.cashier;
 
 
+import catalogue.Product;
+
 /**
  * The Cashier Controller
  * @author M A Smith (c) June 2014
@@ -39,9 +41,9 @@ public class CashierController
    /**
    * Buy interaction from view
    */
-  public void doBuy()
+  public void doBuy(String productNum, int userInput)
   {
-    model.doBuy();
+    model.doBuy(productNum, userInput);
   }
   
    /**
@@ -50,5 +52,9 @@ public class CashierController
   public void doBought()
   {
     model.doBought();
+  }}
+
+  /*public void doEdit(String productNum, int userInput) {
+    model.doEdit(productNum, userInput);
   }
-}
+}*/

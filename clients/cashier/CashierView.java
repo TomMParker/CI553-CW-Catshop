@@ -26,6 +26,8 @@ public class CashierView implements Observer
   private static final String BUY    = "Buy";
   private static final String BOUGHT = "Bought";
 
+  //private static final String EDIT = "Edit Q";
+
   private final JLabel      theAction  = new JLabel();
   private final JTextField  theInput   = new JTextField();
   private final JTextArea   theOutput  = new JTextArea();
@@ -34,6 +36,8 @@ public class CashierView implements Observer
   private final JButton     theBtBuy   = new JButton( BUY );
   private final JButton     theBtBought= new JButton( BOUGHT );
 
+  //private final JButton     theBtEdit= new JButton( EDIT );
+  //Font
   private final JSpinner spinner = new JSpinner();
 
   private int spinnerValue = 0;
@@ -68,12 +72,19 @@ public class CashierView implements Observer
 
     Font f = new Font("Monospaced",Font.PLAIN,12);  // Font f is
 
-    theBtCheck.setBounds( 16, 25+60*0, 80, 40 );    // Check Button
+    theBtCheck.setBounds( 16, 25+70*0, 80, 40 );    // Check Button
     theBtCheck.addActionListener(                   // Call back code
       e -> cont.doCheck( theInput.getText(), spinnerValue ) );
     cp.add( theBtCheck );                         //  Add to canvas
 
-    spinner.setBounds(400-60, 5, 50, 40 );
+    /*theBtEdit.setBounds( 16, 25+60*2, 80, 40 );      // Buy button (removed edit button)
+    theBtEdit.addActionListener(                     // Call back code
+            e -> cont.doEdit(theInput.getText(), spinnerValue ) );
+    Font buttonFont = new Font("Arial",Font.PLAIN, 10);
+    theBtEdit.setFont(buttonFont);
+    cp.add( theBtEdit );*/
+
+    spinner.setBounds(400-70, 5, 50, 40 );
     spinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         // Cast value of spinner to int and save as spinnerValue variable
@@ -85,8 +96,10 @@ public class CashierView implements Observer
 
     theBtBuy.setBounds( 16, 25+60*1, 80, 40 );      // Buy button 
     theBtBuy.addActionListener(                     // Call back code
-      e -> cont.doBuy() );
+      e -> cont.doBuy(theInput.getText(), spinnerValue) );
     cp.add( theBtBuy );                             //  Add to canvas
+
+
 
     theBtBought.setBounds( 16, 25+60*3, 80, 40 );   // Clear Button
     theBtBought.addActionListener(                  // Call back code

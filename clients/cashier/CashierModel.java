@@ -4,9 +4,9 @@ import catalogue.Basket;
 import catalogue.Product;
 import debug.DEBUG;
 import middle.*;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Observable;
 import java.io.PrintWriter;
 
@@ -35,7 +35,49 @@ public class CashierModel extends Observable
   private OrderProcessing theOrder     = null;
 
   SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss EE MMM dd");
-  Date curDate = new Date();
+  SimpleDateFormat sdfForCollection = new SimpleDateFormat("hh:mm");
+  int collectionTime = 15;
+
+
+ /* public void doEdit(String productNum, int userInput ) (removed doEdit method)
+  {
+    String theAction = "";
+    theState  = State.process;                  // State process
+    pn  = productNum.trim();                    // Product no.
+    int    amount  = userInput;                         //  & quantity
+    try
+    {
+      if ( theStock.exists( pn ) )              // Stock Exists?
+      {                                         // T
+        Product pr = theStock.getDetails(pn);   //  Get details
+        if ( pr.getQuantity() >= userInput )       //  In stock?
+        {                                       //  T
+          theAction =                           //   Display
+                  String.format( "%s : %7.2f (%2d) ", //
+                          pr.getDescription(),              //    description
+                          pr.getPrice(),                    //    price
+                          userInput);               //    quantity
+          theProduct = pr;                      //   Remember prod.
+          theProduct.setQuantity( userInput );     //    & quantity
+          theBasket.editQuantity(pr, userInput);
+          theStock.addStock(theProduct.getProductNum(), amount);
+          theState = State.checked;             //   OK await BUY
+        } else {                                //  F
+          theAction =                           //   Not in Stock
+                  pr.getDescription() +" not in stock";
+        }
+      } else {                                  // F Stock exists
+        theAction =                             //  Unknown
+                "Unknown product number " + pn;       //  product no.
+      }
+    } catch( StockException e )
+    {
+      DEBUG.error( "%s\n%s",
+              "CashierModel.doEdit", e.getMessage() );
+      theAction = e.getMessage();
+    }
+    setChanged(); notifyObservers(theAction);
+  }*/
 
   /**
    * Construct the model of the Cashier
@@ -44,8 +86,8 @@ public class CashierModel extends Observable
 
   public CashierModel(MiddleFactory mf)
   {
-    try                                           // 
-    {      
+    try                                           //
+    {
       theStock = mf.makeStockReadWriter();        // Database access
       theOrder = mf.makeOrderProcessing();        // Process order
     } catch ( Exception e )
@@ -56,7 +98,7 @@ public class CashierModel extends Observable
     // Current state
     //theStock.addStock();
   }
-  
+
   /**
    * Get the Basket of products
    * @return basket
@@ -75,7 +117,7 @@ public class CashierModel extends Observable
     String theAction = "";
     theState  = State.process;                  // State process
     pn  = productNum.trim();                    // Product no.
-    int    amount  = 1;                         //  & quantity
+    int    amount  = userInput;                         //  & quantity
     try
     {
       if ( theStock.exists( pn ) )              // Stock Exists?
@@ -83,14 +125,14 @@ public class CashierModel extends Observable
         Product pr = theStock.getDetails(pn);   //  Get details
         if ( pr.getQuantity() >= userInput )       //  In stock?
         {                                       //  T
-          theAction =                           //   Display 
+          theAction =                           //   Display
             String.format( "%s : %7.2f (%2d) ", //
               pr.getDescription(),              //    description
               pr.getPrice(),                    //    price
               userInput);               //    quantity
           theProduct = pr;                      //   Remember prod.
           theProduct.setQuantity( userInput );     //    & quantity
-          theState = State.checked;             //   OK await BUY 
+          theState = State.checked;             //   OK await BUY
         } else {                                //  F
           theAction =                           //   Not in Stock
             pr.getDescription() +" not in stock";
@@ -101,17 +143,18 @@ public class CashierModel extends Observable
       }
     } catch( StockException e )
     {
-      DEBUG.error( "%s\n%s", 
+      DEBUG.error( "%s\n%s",
             "CashierModel.doCheck", e.getMessage() );
       theAction = e.getMessage();
     }
     setChanged(); notifyObservers(theAction);
   }
 
+
   /**
    * Buy the product
    */
-  public void doBuy()
+/*  public void doBuy(String productNo, int userInput)
   {
     String theAction = "";
     int    amount  = 1;                         //  & quantity
@@ -123,12 +166,12 @@ public class CashierModel extends Observable
       } else {
         boolean stockBought =                   // Buy
           theStock.buyStock(                    //  however
-            theProduct.getProductNum(),         //  may fail              
+            theProduct.getProductNum(),         //  may fail
             theProduct.getQuantity() );         //
         if ( stockBought )                      // Stock bought
         {                                       // T
           makeBasketIfReq();                    //  new Basket ?
-          theBasket.add( theProduct );          //  Add to bought
+          theBasket.editQuantity(theProduct, userInput);          //  Add to bought
           theAction = "Purchased " +            //    details
                   theProduct.getDescription();  //
           System.out.println("testing");
@@ -138,14 +181,60 @@ public class CashierModel extends Observable
       }
     } catch( StockException e )
     {
-      DEBUG.error( "%s\n%s", 
+      DEBUG.error( "%s\n%s",
             "CashierModel.doBuy", e.getMessage() );
       theAction = e.getMessage();
     }
     theState = State.process;                   // All Done
     setChanged(); notifyObservers(theAction);
-  }
-  
+  }*/
+
+    public void doBuy(String productNo, int userInput)
+    {
+      int amountReturned = 0; // variable to hold the amount of stock to be returned if the quantity in the basket is edited
+      String theAction = "";
+      int    amount  = 1;                         //  & quantity
+      try
+      {
+        if ( theState != State.checked )          // Not checked
+        {                                         //  with customer
+          theAction = "Check if OK with customer first";
+        } else {
+          boolean stockBought =                   // Buy
+                  theStock.buyStock(                    //  however
+                          theProduct.getProductNum(),         //  may fail
+                          theProduct.getQuantity() );         //
+          System.out.println("quantity ordered: "+theProduct.getQuantity());
+          if ( stockBought )                      // Stock bought
+          {                                       // T
+            makeBasketIfReq();                    //  new Basket ?
+            System.out.println("quantity in basket: " + theBasket.getQuantityInBasket(theProduct));
+            amountReturned = theBasket.getQuantityInBasket(theProduct) - userInput;
+            System.out.println("amount returned:" + amountReturned);
+            if (amountReturned >= 0) {
+              theStock.addStock(theProduct.getProductNum(), amountReturned + theProduct.getQuantity()); // add the quantity of product ordered as this will be taken from stock again when the buy goes through
+
+            }
+            theBasket.editQuantity(theProduct, userInput);          //  Add to bought
+
+            theAction = "Purchased " +            //    details
+                    theProduct.getDescription();  //
+
+
+          } else {                                // F
+            theAction = "!!! Not in stock";       //  Now no stock
+          }
+        }
+      } catch( StockException e )
+      {
+        DEBUG.error( "%s\n%s",
+                "CashierModel.doBuy", e.getMessage() );
+        theAction = e.getMessage();
+      }
+      theState = State.process;                   // All Done
+      setChanged(); notifyObservers(theAction);
+    }
+
   /**
    * Customer pays for the contents of the basket
    */
@@ -160,10 +249,7 @@ public class CashierModel extends Observable
       {                                       // T
         theOrder.newOrder( theBasket );       //  Process order
         System.out.println("testing2");
-        PrintWriter out = new PrintWriter("receipt.txt");
-        out.println(sdf.format(curDate));
-        out.println(theBasket.getDetails());
-        out.close();
+        doReceipt();
 
         theBasket = null;                     //  reset
       }                                       //
@@ -181,6 +267,36 @@ public class CashierModel extends Observable
       theBasket = null;
     setChanged(); notifyObservers(theAction); // Notify
   }
+
+
+/*public void doEdit(Product productNum){
+  theBasket.removeQuantity(productNum);
+}*/
+
+  /**
+   * Grabs basket details and writes to receipt.txt file
+   * Text message to customer advising of collection
+   * time.
+   */
+  public void doReceipt() throws FileNotFoundException {
+    Date curDate = new Date();
+    Date collectionDate = DateUtils.addMinutes(curDate, collectionTime);
+    PrintWriter out = new PrintWriter("receipt.txt");
+    out.println(sdf.format(curDate));
+    out.println(theBasket.getDetails());
+    out.println("Please retain this receipt as proof");
+    out.println("of purchase. Show at the collection");
+    out.println("desk when requested.");
+    out.println("");
+    out.println("Your expected pick up time is:");
+    out.println(sdfForCollection.format(collectionDate));
+
+    out.close();
+
+    theBasket = null;                     //  reset
+  }
+
+
 
   /**
    * ask for update of view callled at start of day

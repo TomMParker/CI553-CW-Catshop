@@ -33,6 +33,7 @@ public class Product implements Serializable
     thePrice       = aPrice;          // Price of product
     theQuantity    = aQuantity;       // Quantity involved
   }
+  ///Test comment
   
   public String getProductNum()  { return theProductNum; }
   public String getDescription() { return theDescription; }
