@@ -38,7 +38,7 @@ public class CashierView implements Observer
 
   //private final JButton     theBtEdit= new JButton( EDIT );
   //Font
-  private final JSpinner spinner = new JSpinner();
+  private final JSpinner spinner = new JSpinner(new SpinnerNumberModel(1,0,100,1));
 
   private int spinnerValue = 0;
 

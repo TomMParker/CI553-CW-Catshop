@@ -68,9 +68,9 @@ public class Basket extends ArrayList<Product> implements Serializable
    * @return true if product in basket
    */
 
-  private boolean productInBasket(Product pr){
-    for(Product productInBasket: this){
-      if(productInBasket.getProductNum().equals(pr.getProductNum())){
+  public boolean productInBasket(Product pr){
+    for(Product productsInBasket: this){
+      if(productsInBasket.getProductNum().equals(pr.getProductNum())){
         return true;
       }
     }
@@ -82,9 +82,9 @@ public class Basket extends ArrayList<Product> implements Serializable
    * @return quantity of selected product in basket
    */
   public int getQuantityInBasket(Product pr) {
-    for (Product productInBasket : this) { //loops through basket
-      if (productInBasket.getProductNum().equals(pr.getProductNum())) { //checks if product is in basket
-        return productInBasket.getQuantity(); // returns quantity in basket
+    for (Product productsInBasket : this) { //loops through basket
+      if (productsInBasket.getProductNum().equals(pr.getProductNum())) { //checks if product is in basket
+        return productsInBasket.getQuantity(); // returns quantity in basket
       }
     }
     return 0; // return 0 if product not found in basket

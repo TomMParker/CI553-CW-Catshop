@@ -27,7 +27,7 @@ public class CashierModel extends Observable
 
   private State       theState   = State.process;   // Current state
   private Product     theProduct = null;            // Current product
-  private Basket      theBasket  = null;            // Bought items
+  private Basket      theBasket  = null;            // Bought items //**change this to betterBasket
 
   private String      pn = "";                      // Product being processed
 
@@ -192,6 +192,8 @@ public class CashierModel extends Observable
     public void doBuy(String productNo, int userInput)
     {
       int amountReturned = 0; // variable to hold the amount of stock to be returned if the quantity in the basket is edited
+      /*int amountInBasket = theProduct.getQuantity();
+      System.out.println(amountInBasket);*/
       String theAction = "";
       int    amount  = 1;                         //  & quantity
       try
@@ -211,10 +213,14 @@ public class CashierModel extends Observable
             System.out.println("quantity in basket: " + theBasket.getQuantityInBasket(theProduct));
             amountReturned = theBasket.getQuantityInBasket(theProduct) - userInput;
             System.out.println("amount returned:" + amountReturned);
-            if (amountReturned >= 0) {
-              theStock.addStock(theProduct.getProductNum(), amountReturned + theProduct.getQuantity()); // add the quantity of product ordered as this will be taken from stock again when the buy goes through
 
-            }
+            if (theBasket.productInBasket(theProduct)){
+              theStock.addStock(theProduct.getProductNum(), theBasket.getQuantityInBasket(theProduct));
+            } /*else if (amountReturned >= 0) {
+            theStock.addStock(theProduct.getProductNum(), amountReturned + theProduct.getQuantity()); // add the quantity of product ordered as this will be taken from stock again when the buy goes through
+
+          }*/
+
             theBasket.editQuantity(theProduct, userInput);          //  Add to bought
 
             theAction = "Purchased " +            //    details
